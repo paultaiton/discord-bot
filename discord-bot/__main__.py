@@ -18,13 +18,6 @@ def main(args=None):
     logging.basicConfig(level=logging.INFO)
     ec2_client = boto3.client('ec2')
 
-    ## debug shit
-    # ec2_client.start_instances(InstanceIds=[''])
-    # ec2_response = ec2_client.describe_instances(Filters=global_tag_filter)
-    # for i in ec2_response.get('Reservations', []):
-    #     for j in i.get('Instances', []):
-    #         print('')
-
     if args is None:
         args = sys.argv[1:]
     parser = argparse.ArgumentParser()
@@ -32,7 +25,7 @@ def main(args=None):
     arguments = parser.parse_args()
 
     intents = discord.Intents.default()
-    bot = commands.Bot(command_prefix='$', description='Description Text Sample Paul', intents=intents)
+    bot = commands.Bot(command_prefix='$', description='Chili Con Carnage game server bot.', intents=intents)
 
     discord_token = arguments.token
 
@@ -40,32 +33,25 @@ def main(args=None):
     async def on_ready():
         print('We have logged in as {0.user}'.format(bot))
 
-    # @discord_client.event
-    # async def on_message(message):
-    #   # if message.author == discord_client.user:
-    #       # return
-
-    #   # if message.content.startswith('$hello'):
-    #       # await message.channel.send('Hello!')
-
-    @bot.command()
-    async def list_games(ctx):
-        ec2_response = ec2_client.describe_instances(Filters=global_tag_filter)
-        message = "list of games:\n"
-        application_set = set()
-        for i in ec2_response.get('Reservations', []):
-            for j in i.get('Instances', []):
-                for tag in j.get('Tags', []):
-                    if tag.get('Key') == "application":
-                        application_set.add(tag.get('Value'))
-
-        await ctx.send("list of games:\n{}".format(application_set))
+#     @bot.command()
+#     async def list_games(ctx):
+#         ec2_response = ec2_client.describe_instances(Filters=global_tag_filter)
+#         message = "list of games:\n"
+#         application_set = set()
+#         for i in ec2_response.get('Reservations', []):
+#             for j in i.get('Instances', []):
+#                 for tag in j.get('Tags', []):
+#                     if tag.get('Key') == "application":
+#                         application_set.add(tag.get('Value'))
+#         await ctx.send("list of games:\n{}".format(application_set))
 
     @bot.command()
-    async def list_servers(ctx, game_name=None):
-        server_tag_filter = global_tag_filter
-        if game_name:
-            server_tag_filter.append(dict(Name='tag:application', Values=[game_name]))
+    async def list_servers(ctx):  # , game_name=None):
+        '''List game servers that are online or available to be started.'''
+        server_tag_filter = []
+        server_tag_filter += global_tag_filter
+#         if game_name:
+#             server_tag_filter.append(dict(Name='tag:application', Values=[game_name]))
         ec2_response = ec2_client.describe_instances(Filters=server_tag_filter)
         # message = "list of servers:\n"
         message = "Name : Game : State : IP : password\n"
@@ -83,7 +69,13 @@ def main(args=None):
 
     @bot.command()
     async def start_server(ctx, servername=None):
-        server_tag_filter = global_tag_filter
+        '''Starts a server that is currently stopped.
+        Run "$list_servers" to get a list of servers able to be managed.
+        The only parameter to $start_server should be the first property returned from $list_servers.
+        Example:
+          $start_server chilivalheim'''
+        server_tag_filter = []
+        server_tag_filter += global_tag_filter
         message = "THIS IS A BUG, let Paul know."  # Message should be set by one of below cases.
         if servername:
             server_tag_filter.append(dict(Name='tag:servername', Values=[servername]))
@@ -105,9 +97,9 @@ def main(args=None):
             message = "You must pass servername as a parameter.\nExample: '$start_game chilivalheim' ."
         await ctx.send(message)
 
-    @bot.command()
-    async def hello(ctx):
-        await ctx.send('Hello World')
+#     @bot.command()
+#     async def hello(ctx):
+#         await ctx.send('Hello World')
 
     bot.run(discord_token)
 
