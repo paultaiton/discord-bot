@@ -1,0 +1,12 @@
+[Unit]
+Description=discordbot
+
+[Service]
+ExecStart=/usr/bin/python3 -m discordbot -t tokentext
+User=discordbot
+Group=discordbot
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
