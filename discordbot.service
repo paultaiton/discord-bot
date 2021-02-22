@@ -2,7 +2,7 @@
 Description=discordbot
 
 [Service]
-ExecStart=/usr/bin/python3 -m discordbot -t tokentext
+ExecStart=/usr/bin/python3 -m discord-bot -t tokentext
 User=discordbot
 Group=discordbot
 Restart=on-failure
