@@ -97,10 +97,6 @@ def main(args=None):
             message = "You must pass servername as a parameter.\nExample: '$start_game chilivalheim' ."
         await ctx.send(message)
 
-#     @bot.command()
-#     async def hello(ctx):
-#         await ctx.send('Hello World')
-
     bot.run(discord_token)
 
 
